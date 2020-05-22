@@ -76,7 +76,7 @@ def get_storage_hash(storage):
     if not isinstance(storage, str):
         storage_cls = storage.__class__
         storage = '%s.%s' % (storage_cls.__module__, storage_cls.__name__)
-    return hashlib.md5(storage.encode('utf8')).hexdigest()
+    return hashlib.md5(storage.encode('utf8'), usedforsecurity=False).hexdigest()
 
 
 def is_transparent(image):
