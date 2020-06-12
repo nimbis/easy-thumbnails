@@ -76,7 +76,17 @@ def get_storage_hash(storage):
     if not isinstance(storage, str):
         storage_cls = storage.__class__
         storage = '%s.%s' % (storage_cls.__module__, storage_cls.__name__)
-    return hashlib.md5(storage.encode('utf8'), usedforsecurity=False).hexdigest()
+
+    # Current stable version of python does not have FIPS support for hashlib. Passing
+    # usedforsecurity=False only works in RHEL versions of python, and is needed to
+    # run this code on hardened RHEL machines. The try-except block will not be needed once
+    # the following issue is resolved:
+    #
+    # https://bugs.python.org/issue9216
+    try:
+        return hashlib.md5(storage.encode('utf8'), usedforsecurity=False).hexdigest()
+    except TypeError:
+        return hashlib.md5(storage.encode('utf8')).hexdigest()
 
 
 def is_transparent(image):
